@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="result"></div>
+</body>
+<head>
+    <script type="text/javascript" src="/js/chance.min.js"></script>
+    <script>
+
+        function num_days_between( start, end, week_day){}
+            num_weeks, remainder = divmod( (end-start).days, 7);
+
+            if (( week_day - start.weekday() ) % 7 < remainder)
+            {
+                return num_weeks + 1;
+            else:
+                return num_weeks;
+            }
+        }
+
+        let result = "";
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const zip = (a, b) => a.map((k, i) => [k, b[i]]);
+
+        let cats = urlParams.getAll('cats');
+
+        if (cats.length % 2 !== 0)
+        {
+            cats.push("lonesome")
+        }
+
+        // let cats_swap = urlParams.getAll('cats');
+        const sprint = parseInt(urlParams.get('sprint'));
+        let pairs = []
+
+        // update sprint number based on date
+        const start_date = urlParams.get('sprint_date');
+
+        var chance1 = new Chance(sprint); // you can choose a seed here, i chose 124
+        cats = chance1.shuffle(cats);
+
+        var a = cats.slice(0, cats.length/2);
+        var b = cats.slice(cats.length/2, cats.length);
+
+        pairs = zip(a,b);
+        for (p of pairs){
+            result += p + "<br>";
+        }
+
+        document.getElementById("result").innerHTML = result;
+    </script>
+</head>
+</html>
