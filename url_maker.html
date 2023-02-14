@@ -230,7 +230,7 @@
       <div class="block-item right">
         <form oninput="writeUrl()">
           <div class="item">
-            <label for="names">First Names<span>*</span></label>
+            <label for="names">First names<span>*</span></label>
             <input id="names" type="text" name="names" placeholder="comma seperated" oninput="writeUrl();" required/>
           </div>
           <div class="item">
@@ -238,11 +238,14 @@
             <input id="sprint" type="text" name="sprint" placeholder="e.g. 10" oninput="writeUrl();" required/>
           </div>
           <div class="item">
-            <label for="sdate">Sprint Start Date<span>*</span></label>
+            <label for="sdate">Sprint start date<span>*</span></label>
             <input id="sdate" type="date" name="sdate" oninput="writeUrl();" required/>
             <i class="fas fa-calendar-alt"></i>
           </div>
-
+          <div class="item">
+            <label for="ssize">Sprint size<span>*</span></label>
+            <input id="ssize" type="text" name="ssize" placeholder="in days e.g. 14" oninput="writeUrl();" required/>
+          </div>
           <div class="item">
             <label for="url">url...<span></span></label>
             <a id="url" type="text" name="url" href="" style="display: inline-block" target="_blank"></a>
@@ -261,6 +264,7 @@
           let sdate = document.getElementById("sdate").value;
           let sprint = document.getElementById("sprint").value;
           let names = document.getElementById("names").value;
+          let sprint_size = document.getElementById("ssize").value;
           let names_url = [];
 
           for (let n of names.split(",")){
@@ -273,7 +277,7 @@
           names_url.sort();
           names_url = names_url.join('');
 
-          let url_string = `./index.html?sprint=${sprint}&sdate=${sdate}${names_url}`;
+          let url_string = `./index.html?sprint=${sprint}&sprint_size=${sprint_size}&sprint_date=${sdate}${names_url}`;
           let url_link = document.getElementById("url")
           url_link.innerText = url_string;
           url_link.href = url_string;

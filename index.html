@@ -3,28 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style-coffee-shop.css">
 </head>
 <body>
-<div class="container">
-    <div class="hero">
-      <div id="plsstop">
-        <h1 class="name">
-          <div id="result"></div>
-<!--          <span id="strike">you got a sec?</span><span class="typed-cursor typed-cursor&#45;&#45;blink">|</span>-->
-        </h1>
-      </div>
-      <span class="subtitle">go get'em team!</span>
-      <h2 class="lead">
-        Bookmark and come back whenever you need to find your <em>pair!</em> 🍐....️
-      </h2>
-    </div>
-  </div>
+<div contenteditable class="board">
+	<p style="text-align: left;">today's 🍐</p>
+    <div id="result"></div>
+</div>
+<!--<div class="container">-->
+<!--    <div class="hero">-->
+<!--      <div id="plsstop">-->
+<!--        <h1 class="name">-->
+
+<!--          <div id="result"></div>-->
+<!--        </h1>-->
+<!--      </div>-->
+<!--      <span class="subtitle">Bookmark to always find your <span style="font-size: xxx-large">🍐</span>️</span>-->
+<!--      <h2 class="lead">-->
+<!--&lt;!&ndash;        Bookmark to always find your 🍐️&ndash;&gt;-->
+<!--      </h2>-->
+<!--    </div>-->
+<!--  </div>-->
 <iframe id="maker" src="url_maker.html" title="URL maker" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999; display: none;"></iframe>
 </body>
 <head>
     <script type="text/javascript" src="js/chance.min.js"></script>
     <script>
+        function date_diff_days(a, b) {
+          const _MS_PER_DAY = 1000 * 60 * 60 * 24;
+          // Discard the time and time-zone information.
+          const utc1 = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+          const utc2 = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+
+          return Math.floor((utc2 - utc1) / _MS_PER_DAY);
+        }
+
         function divmod(a, b) {
           var remainder = a % b;
           var aIsInfinite = a === -Infinity || a === Infinity;
@@ -36,15 +49,20 @@
             (!a && b < 0) ? -0 : remainder + (remainder !== 0 && aIsNeg !== bIsNeg ? b : 0)
           ];
         }
-        function num_days_between(start, end, week_day) {
-            let res = divmod((end - start).days, 7);
-            let num_weeks = res[0]
-            let remainder = [1]
-            if ((week_day - start.weekday()) % 7 < remainder) {
-                return num_weeks + 1;
-            } else {
-                return num_weeks;
+
+        function sprints_inbetween(start, end, week_day, sprint_size) {
+            let res = divmod(date_diff_days(start, end), sprint_size);
+            return res[0]
+        }
+
+        function calculate_latest_sprint(sprint, start_date, sprint_size){
+            if (start_date) {
+                let additional_sprints = (sprints_inbetween(start_date, new Date(), 2, sprint_size))
+                console.log(`additional sprints ${additional_sprints}`);
+                console.log(`total sprints ${sprint + additional_sprints}`)
+                return sprint + additional_sprints;
             }
+            return sprint;
         }
 
         let result = "";
@@ -60,25 +78,25 @@
 
             let names = urlParams.getAll('name');
 
+            // Adjust uneven list
             if (names.length % 2 !== 0) {
                 names.push("🪂")
             }
 
-            // let names_swap = urlParams.getAll('names');
             const sprint = parseInt(urlParams.get('sprint'));
-            let pairs = []
+            const sprint_size = parseInt(urlParams.get('sprint_size'));
+            const start_date = new Date(urlParams.get('sprint_date').concat(" 0:00:00"));
 
             // update sprint number based on date
-            const start_date = urlParams.get('sprint_date');
+            let chance1 = new Chance(calculate_latest_sprint(sprint, start_date, sprint_size));
 
-            var chance1 = new Chance(sprint); // you can choose a seed here, i chose 124
+            // shuffle and slice
             names = chance1.shuffle(names);
+            let a = names.slice(0, names.length / 2);
+            let b = names.slice(names.length / 2, names.length);
 
-            var a = names.slice(0, names.length / 2);
-            var b = names.slice(names.length / 2, names.length);
-
-            pairs = zip(a, b);
-            for (p of pairs) {
+            let pairs = zip(a, b);
+            for (let p of pairs) {
                 result += p + "<br>";
             }
 
