@@ -3,21 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div id="result"></div>
+<div class="container">
+    <div class="hero">
+      <div id="plsstop">
+        <h1 class="name">
+          <div id="result"></div>
+<!--          <span id="strike">you got a sec?</span><span class="typed-cursor typed-cursor&#45;&#45;blink">|</span>-->
+        </h1>
+      </div>
+      <span class="subtitle">go get'em team!</span>
+      <h2 class="lead">
+        Bookmark and come back whenever you need to find your <em>pair!</em> 🍐....️
+      </h2>
+    </div>
+  </div>
+<iframe id="maker" src="url_maker.html" title="URL maker" style="position:fixed; top:0; left:0; bottom:0; right:0; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999; display: none;"></iframe>
 </body>
 <head>
     <script type="text/javascript" src="/js/chance.min.js"></script>
     <script>
-
-        function num_days_between( start, end, week_day){}
-            num_weeks, remainder = divmod( (end-start).days, 7);
-
-            if (( week_day - start.weekday() ) % 7 < remainder)
-            {
+        function divmod(a, b) {
+          var remainder = a % b;
+          var aIsInfinite = a === -Infinity || a === Infinity;
+          var bIsInfinite = b === -Infinity || b === Infinity;
+          var aIsNeg = a + 1 / a < 0;
+          var bIsNeg = b + 1 / b < 0;
+          return [
+            (aIsInfinite !== bIsInfinite && a) ? aIsInfinite ? NaN : aIsNeg === bIsNeg ? 0 : -1 : Math.floor(a / b),
+            (!a && b < 0) ? -0 : remainder + (remainder !== 0 && aIsNeg !== bIsNeg ? b : 0)
+          ];
+        }
+        function num_days_between(start, end, week_day) {
+            let res = divmod((end - start).days, 7);
+            let num_weeks = res[0]
+            let remainder = [1]
+            if ((week_day - start.weekday()) % 7 < remainder) {
                 return num_weeks + 1;
-            else:
+            } else {
                 return num_weeks;
             }
         }
@@ -25,34 +50,40 @@
         let result = "";
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
-        const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 
-        let cats = urlParams.getAll('cats');
-
-        if (cats.length % 2 !== 0)
-        {
-            cats.push("lonesome")
+        if (!urlParams.has("name")){
+            document.getElementById("maker").style.display = "block";
         }
+        else {
+            document.getElementById("maker").style.display = "none";
+            const zip = (a, b) => a.map((k, i) => [k, b[i]]);
 
-        // let cats_swap = urlParams.getAll('cats');
-        const sprint = parseInt(urlParams.get('sprint'));
-        let pairs = []
+            let names = urlParams.getAll('name');
 
-        // update sprint number based on date
-        const start_date = urlParams.get('sprint_date');
+            if (names.length % 2 !== 0) {
+                names.push("🪂")
+            }
 
-        var chance1 = new Chance(sprint); // you can choose a seed here, i chose 124
-        cats = chance1.shuffle(cats);
+            // let names_swap = urlParams.getAll('names');
+            const sprint = parseInt(urlParams.get('sprint'));
+            let pairs = []
 
-        var a = cats.slice(0, cats.length/2);
-        var b = cats.slice(cats.length/2, cats.length);
+            // update sprint number based on date
+            const start_date = urlParams.get('sprint_date');
 
-        pairs = zip(a,b);
-        for (p of pairs){
-            result += p + "<br>";
+            var chance1 = new Chance(sprint); // you can choose a seed here, i chose 124
+            names = chance1.shuffle(names);
+
+            var a = names.slice(0, names.length / 2);
+            var b = names.slice(names.length / 2, names.length);
+
+            pairs = zip(a, b);
+            for (p of pairs) {
+                result += p + "<br>";
+            }
+
+            document.getElementById("result").innerHTML = result;
         }
-
-        document.getElementById("result").innerHTML = result;
     </script>
 </head>
 </html>
